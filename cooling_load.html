@@ -3,54 +3,887 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cooling Load Analysis — Grid Resilience</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<title>Cooling Load Analysis — Grid Resilience for Growing Cities</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 <style>
-:root { --bg: #06090f; --surface: #0d1320; --border: #1a2640; --text: #e4eaf2; --text-dim: #7a8da8; --accent: #fb923c; }
+:root {
+  --bg: #06090f;
+  --surface: #0d1320;
+  --surface-alt: #111c2e;
+  --surface-raised: #162032;
+  --border: #1a2640;
+  --border-light: #243352;
+  --text: #e4eaf2;
+  --text-dim: #7a8da8;
+  --text-muted: #3d5070;
+  --accent: #fb923c;
+  --accent-glow: rgba(251, 146, 60, 0.08);
+  --accent-border: rgba(251, 146, 60, 0.2);
+  --cyan: #38bdf8;
+  --cyan-glow: rgba(56, 189, 248, 0.08);
+  --green: #34d399;
+  --green-glow: rgba(52, 211, 153, 0.08);
+  --purple: #a78bfa;
+  --purple-glow: rgba(167, 139, 250, 0.08);
+  --red: #f87171;
+  --red-glow: rgba(248, 113, 113, 0.06);
+  --yellow: #fbbf24;
+  --yellow-glow: rgba(251, 191, 36, 0.08);
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.75; overflow-x: hidden; }
-.stage-nav { position: sticky; top: 0; z-index: 100; display: flex; justify-content: center; gap: 8px; padding: 14px; background: rgba(6, 9, 15, 0.8); backdrop-filter: blur(14px); }
-.stage-btn { font-family: 'JetBrains Mono'; font-size: 0.65rem; padding: 8px 16px; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); border-radius: 6px; cursor: pointer; text-transform: uppercase; }
-.stage-btn.active { border-color: var(--accent); color: var(--accent); }
-.container { max-width: 820px; margin: 0 auto; padding: 0 28px; }
-.section-anchor { scroll-margin-top: 80px; height: 2px; display: block; visibility: hidden; }
-.hero { min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 60px 28px; }
-.hero h1 { font-family: 'JetBrains Mono'; font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 700; color: var(--accent); margin-bottom: 20px; }
-.hero-tagline { font-size: 1.2rem; color: var(--text-dim); max-width: 600px; }
-.section-break { padding: 80px 0 40px; }
-.section-label { font-family: 'JetBrains Mono'; font-weight: 700; color: var(--accent); margin-bottom: 20px; }
-.equation-strip { background: var(--surface); border: 1px solid var(--border); padding: 30px; border-radius: 12px; text-align: center; font-family: 'JetBrains Mono'; color: var(--text); margin: 30px 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.7;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ─── GRAIN ─── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ─── NAV ─── */
+.stage-nav {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding: 14px 20px 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(180deg, var(--bg) 70%, transparent);
+  flex-wrap: wrap;
+}
+.stage-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  padding: 7px 13px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-dim);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.stage-btn:hover { border-color: var(--accent); color: var(--text); }
+.stage-btn.active {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 20px rgba(251,146,60,0.08);
+}
+.stage-btn.home-btn {
+  background: var(--surface-alt);
+  border-color: var(--border-light);
+  color: var(--text-dim);
+}
+.stage-btn.home-btn:hover {
+  border-color: var(--green);
+  color: var(--green);
+  background: var(--green-glow);
+}
+
+/* ─── HERO ─── */
+.hero {
+  text-align: center;
+  padding: 70px 24px 50px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 40% 30%, rgba(251,146,60,0.05), transparent),
+    radial-gradient(ellipse 40% 40% at 70% 70%, rgba(248,113,113,0.03), transparent);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(251,146,60,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(251,146,60,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 55% 50% at 50% 50%, black 20%, transparent 70%);
+  pointer-events: none;
+}
+.hero-content { position: relative; }
+
+.hero .badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-glow);
+  border: 1px solid var(--accent-border);
+  padding: 5px 14px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeIn 0.6s 0.1s ease forwards;
+}
+
+.hero h1 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1.15;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.2s ease forwards;
+}
+.hero h1 .accent { color: var(--accent); }
+
+.hero-tagline {
+  font-size: 1rem;
+  color: var(--text-dim);
+  max-width: 620px;
+  margin: 0 auto 30px;
+  line-height: 1.75;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.35s ease forwards;
+}
+
+/* Hero stats */
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 36px;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.5s ease forwards;
+}
+.stat-item { text-align: center; }
+.stat-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.stat-num.orange { color: var(--accent); }
+.stat-num.red { color: var(--red); }
+.stat-num.cyan { color: var(--cyan); }
+.stat-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ─── SECTION WRAP ─── */
+.section-wrap {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.section-anchor {
+  scroll-margin-top: 70px;
+  height: 2px;
+  display: block;
+  visibility: hidden;
+}
+
+/* ─── FLOW CONNECTOR ─── */
+.flow-connector {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+.flow-arrow {
+  width: 2px;
+  height: 50px;
+  background: linear-gradient(180deg, var(--accent), transparent);
+  position: relative;
+}
+.flow-arrow::after {
+  content: '▼';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--accent);
+  font-size: 10px;
+}
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color 0.3s;
+  margin-bottom: 8px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.step-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 5px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.step-badge.orange { background: var(--accent-glow); color: var(--accent); border: 1px solid var(--accent-border); }
+.step-badge.red { background: var(--red-glow); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+.step-badge.cyan { background: var(--cyan-glow); color: var(--cyan); border: 1px solid rgba(56,189,248,0.2); }
+.step-badge.green { background: var(--green-glow); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+.step-badge.purple { background: var(--purple-glow); color: var(--purple); border: 1px solid rgba(167,139,250,0.2); }
+
+.card-header h2 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+.card-body {
+  padding: 24px;
+}
+
+.section-intro {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 1.75;
+  max-width: 700px;
+  margin-bottom: 24px;
+}
+
+/* ─── SUB-LABEL ─── */
+.sub-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 24px 0 12px;
+}
+
+/* ─── PIPELINE ─── */
+.pipeline-flow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  padding: 14px 0;
+  margin: 10px 0;
+}
+.pipe-node {
+  padding: 12px 16px;
+  border-radius: 7px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  white-space: nowrap;
+  text-align: center;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  min-width: 80px;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+.pipe-arrow {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding: 0 5px;
+  flex-shrink: 0;
+}
+.pipe-node.hl-orange { border-color: var(--accent-border); background: var(--accent-glow); color: var(--accent); }
+.pipe-node.hl-red { border-color: rgba(248,113,113,0.35); background: var(--red-glow); color: var(--red); }
+.pipe-node.hl-cyan { border-color: rgba(56,189,248,0.35); background: var(--cyan-glow); color: var(--cyan); }
+.pipe-node.hl-green { border-color: rgba(52,211,153,0.35); background: var(--green-glow); color: var(--green); }
+
+/* ─── FEATURE GRID ─── */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 16px 0;
+}
+@media (max-width: 700px) { .feature-grid { grid-template-columns: 1fr; } }
+
+.feature-card {
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+}
+.fc-icon { font-size: 1.2rem; margin-bottom: 8px; }
+.fc-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: var(--text);
+}
+.fc-desc {
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+}
+
+/* ─── ARCHETYPE TABLE ─── */
+.arch-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 0.78rem;
+}
+.arch-table th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--border);
+  background: var(--surface-alt);
+}
+.arch-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-dim);
+}
+.arch-table tr:hover td { color: var(--text); background: rgba(251,146,60,0.02); }
+
+/* ─── SVG DIAGRAM ─── */
+.arch-diagram {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  margin: 16px 0;
+  overflow-x: auto;
+}
+.arch-diagram svg { display: block; margin: 0 auto; }
+
+/* ─── IMPACT CARDS ─── */
+.impact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 16px 0;
+}
+@media (max-width: 600px) { .impact-grid { grid-template-columns: 1fr; } }
+
+.impact-card {
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid;
+  position: relative;
+}
+.impact-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 8px 8px 0 0;
+}
+.impact-card.heat {
+  border-color: rgba(248,113,113,0.2);
+  background: var(--red-glow);
+}
+.impact-card.heat::before { background: var(--red); }
+.impact-card.grid-c {
+  border-color: var(--accent-border);
+  background: var(--accent-glow);
+}
+.impact-card.grid-c::before { background: var(--accent); }
+.impact-card.equity {
+  border-color: rgba(167,139,250,0.2);
+  background: var(--purple-glow);
+}
+.impact-card.equity::before { background: var(--purple); }
+
+.impact-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.impact-card.heat .impact-num { color: var(--red); }
+.impact-card.grid-c .impact-num { color: var(--accent); }
+.impact-card.equity .impact-num { color: var(--purple); }
+
+.impact-context {
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+}
+.impact-source {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.48rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+/* ─── EQUATION STRIP ─── */
+.equation-strip {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text);
+  margin: 16px 0;
+  overflow-x: auto;
+  line-height: 1.8;
+}
+.eq-label {
+  font-size: 0.55rem;
+  color: var(--accent);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ─── STATUS ─── */
+.status-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: inline-block;
+}
+.status-ongoing { background: var(--accent-glow); color: var(--accent); }
+
+/* ─── FOOTER ─── */
+.footer {
+  text-align: center;
+  padding: 50px 24px 36px;
+  border-top: 1px solid var(--border);
+  margin-top: 40px;
+}
+.footer p {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 </style>
 </head>
 <body>
+
+<!-- ═══ NAV ═══ -->
 <nav class="stage-nav">
-  <button class="stage-btn" onclick="window.location.href='index.html'">00 HOME</button>
-  <button class="stage-btn active" onclick="goToSection('modeling')">01 MODELING</button>
-  <button class="stage-btn" onclick="goToSection('simulation')">02 SIMULATION</button>
+  <a class="stage-btn home-btn" href="index.html">← HOME</a>
+  <button class="stage-btn active" onclick="goToSection('overview')">OVERVIEW</button>
+  <button class="stage-btn" onclick="goToSection('problem')">PROBLEM</button>
+  <button class="stage-btn" onclick="goToSection('archetypes')">ARCHETYPES</button>
+  <button class="stage-btn" onclick="goToSection('simulation')">SIMULATION</button>
+  <button class="stage-btn" onclick="goToSection('grid')">GRID IMPACT</button>
 </nav>
-<div class="section-anchor" id="modeling"></div>
+
+<!-- ═══ HERO ═══ -->
+<div class="section-anchor" id="overview"></div>
 <section class="hero">
-  <h1>Cooling Load Impact</h1>
-  <p class="hero-tagline">Forecasting electricity demand and grid strain in warming urban environments.</p>
+  <div class="hero-content">
+    <div class="badge">ENERGY SYSTEMS · URBAN RESILIENCE · SUB-SAHARAN AFRICA</div>
+    <h1>Electricity Demand Forecasting &<br><span class="accent">Cooling Load Analysis</span></h1>
+    <p class="hero-tagline">
+      Translating residential building footprints into transformer-level strain estimates 
+      under WHO thermal comfort targets. A simulation pipeline for grid-resilience planning 
+      as air conditioning adoption accelerates across warming East African cities.
+    </p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num orange">+3.2°C</div>
+        <div class="stat-label">Projected warming<br>by 2070 (SSP2-4.5)</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num red">~5%</div>
+        <div class="stat-label">Current AC penetration<br>in urban East Africa</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num cyan">3–8×</div>
+        <div class="stat-label">Expected cooling<br>demand growth</div>
+      </div>
+    </div>
+  </div>
 </section>
-<div class="container">
-  <section class="section-break">
-    <h2 class="section-label">01 — Archetype Modeling</h2>
-    <p style="color: var(--text-dim);">Mapped Microsoft building footprints to residential archetypes (materials and insulation) and used analytics to forecast cooling adoption and load profiles.</p>
-  </section>
-  <div class="section-anchor" id="simulation"></div>
-  <section class="section-break">
-    <h2 class="section-label">02 — Simulation Pipeline</h2>
-    <div class="equation-strip">SketchUp → EnergyPlus → JEPlus → Grid Analysis</div>
-    <p style="color: var(--text-dim);">Large-scale parametric simulations translate thermal loads into transformer-level strain estimates to guide grid-resilience planning under WHO comfort targets.</p>
-  </section>
+
+
+<!-- ═══════════════════════════════════════ -->
+<!--        01 — THE PROBLEM                -->
+<!-- ═══════════════════════════════════════ -->
+<div class="flow-connector"><div class="flow-arrow"></div></div>
+
+<div class="section-anchor" id="problem"></div>
+<div class="section-wrap fade-in">
+  <div class="card">
+    <div class="card-header">
+      <span class="step-badge red">STEP 01</span>
+      <h2>The Grid Resilience Challenge</h2>
+    </div>
+    <div class="card-body">
+      <p class="section-intro">
+        Urban populations in sub-Saharan Africa are growing rapidly, and rising temperatures are pushing 
+        households toward mechanical cooling. But distribution transformers were sized for lighting and small 
+        appliance loads — not AC. Without forward-looking load estimates tied to building stock characteristics, 
+        utilities cannot plan upgrades before the grid fails.
+      </p>
+
+      <div class="impact-grid">
+        <div class="impact-card heat">
+          <div class="impact-num">2.1B</div>
+          <div class="impact-context">People globally lacking access to cooling, concentrated in tropical developing regions</div>
+          <div class="impact-source">Sustainable Energy for All, 2021</div>
+        </div>
+        <div class="impact-card grid-c">
+          <div class="impact-num">40%</div>
+          <div class="impact-context">Peak electricity demand attributable to space cooling in tropical cities at saturation</div>
+          <div class="impact-source">IEA Future of Cooling, 2018</div>
+        </div>
+        <div class="impact-card equity">
+          <div class="impact-num">$0.15–0.30</div>
+          <div class="impact-context">Per kWh cost in East Africa — 3–5× higher than global average, making efficiency critical</div>
+          <div class="impact-source">ESMAP / World Bank</div>
+        </div>
+      </div>
+
+      <div class="feature-grid" style="grid-template-columns: repeat(2, 1fr); margin-top: 20px;">
+        <div class="feature-card">
+          <div class="fc-icon">🌡️</div>
+          <div class="fc-title">HEAT EXPOSURE GAP</div>
+          <div class="fc-desc">WHO defines thermal comfort at 18–24°C. Indoor temperatures in uninsulated residential buildings regularly exceed 30°C during warm seasons — but almost no cooling infrastructure exists.</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">⚡</div>
+          <div class="fc-title">TRANSFORMER STRAIN</div>
+          <div class="fc-desc">A single split-unit AC (1.5 kW) on a 50 kVA transformer serving 40 households can push load factors past rated capacity if adoption clusters spatially.</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+
+<!-- ═══════════════════════════════════════ -->
+<!--       02 — BUILDING ARCHETYPES         -->
+<!-- ═══════════════════════════════════════ -->
+<div class="flow-connector"><div class="flow-arrow"></div></div>
+
+<div class="section-anchor" id="archetypes"></div>
+<div class="section-wrap fade-in">
+  <div class="card">
+    <div class="card-header">
+      <span class="step-badge orange">STEP 02</span>
+      <h2>Building Archetype Modeling</h2>
+    </div>
+    <div class="card-body">
+      <p class="section-intro">
+        Microsoft building footprints provide roof area and geometry for millions of structures. 
+        We classify these into residential archetypes — each defined by wall material, roofing type, 
+        insulation level, and occupancy pattern — then assign thermal properties for simulation.
+      </p>
+
+      <div class="sub-label" style="color: var(--accent);">ARCHETYPE CLASSIFICATION</div>
+      <table class="arch-table">
+        <thead>
+          <tr><th>Archetype</th><th>Wall</th><th>Roof</th><th>Insulation</th><th>Prevalence</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:var(--text)">Type A — Low-Rise Informal</td>
+            <td>Corrugated iron / timber</td>
+            <td>Metal sheet</td>
+            <td>None</td>
+            <td>~35%</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text)">Type B — Concrete Block</td>
+            <td>Hollow concrete block</td>
+            <td>Metal / concrete slab</td>
+            <td>Minimal</td>
+            <td>~40%</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text)">Type C — Stone / Masonry</td>
+            <td>Cut stone / fired brick</td>
+            <td>Tile / concrete</td>
+            <td>Partial</td>
+            <td>~18%</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text)">Type D — Modern Apartment</td>
+            <td>Reinforced concrete</td>
+            <td>Flat slab</td>
+            <td>Per code</td>
+            <td>~7%</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="fc-icon">🏗️</div>
+          <div class="fc-title">FOOTPRINT → GEOMETRY</div>
+          <div class="fc-desc">Microsoft Building Footprints provide polygon outlines. SketchUp extrusion converts to 3D thermal zones based on estimated floor count.</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">🧱</div>
+          <div class="fc-title">MATERIAL ASSIGNMENT</div>
+          <div class="fc-desc">Each archetype gets envelope U-values, solar heat gain coefficients, and infiltration rates from DHS survey data and field measurements.</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">👥</div>
+          <div class="fc-title">OCCUPANCY PROFILES</div>
+          <div class="fc-desc">Weekday/weekend occupancy schedules, internal heat gains from cooking and lighting, and natural ventilation patterns per archetype.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════ -->
+<!--       03 — SIMULATION PIPELINE         -->
+<!-- ═══════════════════════════════════════ -->
+<div class="flow-connector"><div class="flow-arrow"></div></div>
+
+<div class="section-anchor" id="simulation"></div>
+<div class="section-wrap fade-in">
+  <div class="card">
+    <div class="card-header">
+      <span class="step-badge cyan">STEP 03</span>
+      <h2>Parametric Simulation Pipeline</h2>
+    </div>
+    <div class="card-body">
+      <p class="section-intro">
+        Large-scale parametric simulations sweep across archetype variants, climate scenarios, 
+        and AC adoption rates. EnergyPlus computes hourly thermal loads; JEPlus orchestrates 
+        the parameter space; results aggregate into transformer-level demand profiles.
+      </p>
+
+      <!-- Pipeline -->
+      <div class="pipeline-flow">
+        <div class="pipe-node">MS Building<br><span style="font-size:0.45rem;color:var(--text-muted)">Footprints</span></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node hl-orange">SketchUp<br>Extrude</div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node hl-cyan">EnergyPlus<br>Simulate</div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node hl-orange">JEPlus<br>Parametric</div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node hl-red">Load<br>Profiles</div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-node hl-green">Grid<br>Analysis</div>
+      </div>
+
+      <div class="sub-label" style="color: var(--cyan);">PARAMETER SPACE</div>
+      <div class="feature-grid" style="grid-template-columns: repeat(2, 1fr);">
+        <div class="feature-card">
+          <div class="fc-title" style="color: var(--cyan);">CLIMATE SCENARIOS</div>
+          <div class="fc-desc">TMY weather files for baseline + SSP1-2.6, SSP2-4.5, SSP5-8.5 projections. Future weather morphed using CCWorldWeatherGen methodology for 2050 and 2070 horizons.</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-title" style="color: var(--accent);">AC ADOPTION CURVES</div>
+          <div class="fc-desc">S-curve adoption models parameterised by income quintile and electricity tariff. Sweep from 5% to 60% penetration across transformer service areas.</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-title" style="color: var(--green);">EFFICIENCY TIERS</div>
+          <div class="fc-desc">Split-unit ACs at EER 2.5 (baseline), 3.2 (minimum standard), and 4.0 (high-efficiency). Quantifies impact of appliance standards on grid strain.</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-title" style="color: var(--purple);">ENVELOPE UPGRADES</div>
+          <div class="fc-desc">Insulation retrofit scenarios — cool roofs, wall insulation, improved glazing — to estimate passive cooling potential before AC adoption.</div>
+        </div>
+      </div>
+
+      <div class="equation-strip">
+        <span class="eq-label">CORE RELATIONSHIP</span>
+        Q_cool(t) = Σ [ A_arch × U_env × ΔT(t) + Q_internal(t) + Q_solar(t) − Q_vent(t) ] × adoption_rate(income, year)
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════ -->
+<!--        04 — GRID IMPACT                -->
+<!-- ═══════════════════════════════════════ -->
+<div class="flow-connector"><div class="flow-arrow"></div></div>
+
+<div class="section-anchor" id="grid"></div>
+<div class="section-wrap fade-in">
+  <div class="card">
+    <div class="card-header">
+      <span class="step-badge green">STEP 04</span>
+      <h2>Grid Impact & Policy Implications</h2>
+    </div>
+    <div class="card-body">
+      <p class="section-intro">
+        Simulation outputs are aggregated at the distribution transformer level to identify 
+        where and when capacity will be exceeded. This enables targeted infrastructure 
+        investment and informs appliance efficiency standards.
+      </p>
+
+      <!-- Diagram: transformer load scenarios -->
+      <div class="arch-diagram">
+        <svg viewBox="0 0 760 200" width="100%" style="max-width:760px">
+          <defs>
+            <marker id="arrowOrange" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#fb923c"/>
+            </marker>
+          </defs>
+
+          <!-- Transformer box -->
+          <rect x="300" y="10" width="160" height="60" rx="6" fill="rgba(251,146,60,0.06)" stroke="#fb923c" stroke-width="1.2"/>
+          <text x="380" y="35" fill="#fb923c" font-family="JetBrains Mono" font-size="8" text-anchor="middle" font-weight="600">50 kVA TRANSFORMER</text>
+          <text x="380" y="50" fill="#7a8da8" font-family="JetBrains Mono" font-size="6.5" text-anchor="middle">Serving 40 households</text>
+          <text x="380" y="62" fill="#7a8da8" font-family="JetBrains Mono" font-size="6.5" text-anchor="middle">Baseline load: 28 kVA</text>
+
+          <!-- Scenario A: Low adoption -->
+          <rect x="30" y="100" width="200" height="80" rx="6" fill="rgba(52,211,153,0.04)" stroke="#34d399" stroke-width="1"/>
+          <text x="130" y="120" fill="#34d399" font-family="JetBrains Mono" font-size="7" text-anchor="middle" font-weight="600">SCENARIO A — LOW</text>
+          <text x="130" y="135" fill="#7a8da8" font-family="JetBrains Mono" font-size="6.5" text-anchor="middle">10% AC adoption · EER 3.2</text>
+          <text x="130" y="150" fill="#34d399" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">34 kVA</text>
+          <text x="130" y="165" fill="#34d399" font-family="JetBrains Mono" font-size="6" text-anchor="middle">✓ Within capacity</text>
+
+          <!-- Scenario B: Mid adoption -->
+          <rect x="280" y="100" width="200" height="80" rx="6" fill="rgba(251,191,36,0.04)" stroke="#fbbf24" stroke-width="1"/>
+          <text x="380" y="120" fill="#fbbf24" font-family="JetBrains Mono" font-size="7" text-anchor="middle" font-weight="600">SCENARIO B — MID</text>
+          <text x="380" y="135" fill="#7a8da8" font-family="JetBrains Mono" font-size="6.5" text-anchor="middle">30% AC adoption · EER 2.5</text>
+          <text x="380" y="150" fill="#fbbf24" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">46 kVA</text>
+          <text x="380" y="165" fill="#fbbf24" font-family="JetBrains Mono" font-size="6" text-anchor="middle">⚠ Near rated capacity</text>
+
+          <!-- Scenario C: High adoption -->
+          <rect x="530" y="100" width="200" height="80" rx="6" fill="rgba(248,113,113,0.05)" stroke="#f87171" stroke-width="1.2"/>
+          <text x="630" y="120" fill="#f87171" font-family="JetBrains Mono" font-size="7" text-anchor="middle" font-weight="600">SCENARIO C — HIGH</text>
+          <text x="630" y="135" fill="#7a8da8" font-family="JetBrains Mono" font-size="6.5" text-anchor="middle">50% AC adoption · EER 2.5</text>
+          <text x="630" y="150" fill="#f87171" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">62 kVA</text>
+          <text x="630" y="165" fill="#f87171" font-family="JetBrains Mono" font-size="6" text-anchor="middle">✗ OVERLOADED — upgrade needed</text>
+
+          <!-- Arrows from transformer -->
+          <line x1="340" y1="70" x2="130" y2="98" stroke="#fb923c" stroke-width="0.8" marker-end="url(#arrowOrange)" opacity="0.5"/>
+          <line x1="380" y1="70" x2="380" y2="98" stroke="#fb923c" stroke-width="0.8" marker-end="url(#arrowOrange)" opacity="0.5"/>
+          <line x1="420" y1="70" x2="630" y2="98" stroke="#fb923c" stroke-width="0.8" marker-end="url(#arrowOrange)" opacity="0.5"/>
+        </svg>
+      </div>
+
+      <div class="sub-label" style="color: var(--green);">POLICY-RELEVANT OUTPUTS</div>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="fc-icon">🗺️</div>
+          <div class="fc-title">SPATIAL HOTSPOT MAPS</div>
+          <div class="fc-desc">Transformer-level heat maps showing where cooling load will exceed capacity first, guiding targeted infrastructure investment.</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">📐</div>
+          <div class="fc-title">EFFICIENCY STANDARDS</div>
+          <div class="fc-desc">Quantified grid savings from minimum energy performance standards (MEPS) for AC units — informing national appliance policy.</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">🏠</div>
+          <div class="fc-title">PASSIVE-FIRST STRATEGY</div>
+          <div class="fc-desc">Cost-benefit of envelope upgrades (cool roofs, insulation) vs. AC adoption — reducing cooling demand before it reaches the grid.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;">
+        <span class="status-badge status-ongoing">Ongoing — Simulations in progress</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+  <p style="margin-bottom:6px;">Electricity Demand Forecasting & Cooling Load Analysis</p>
+  <p>Nairobi · Kigali · 2025–2026</p>
+</footer>
+
+
 <script>
 function goToSection(id) {
-  const element = document.getElementById(id);
-  if (element) { element.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  const el = document.getElementById(id);
+  if (el) {
+    const y = el.getBoundingClientRect().top + window.pageYOffset - 60;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  }
 }
+
+// ─── Nav highlighting ───
+const navBtns = document.querySelectorAll('.stage-btn:not(.home-btn)');
+const sections = document.querySelectorAll('.section-anchor');
+
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      navBtns.forEach(b => {
+        const onclick = b.getAttribute('onclick') || '';
+        b.classList.toggle('active', onclick.includes(id));
+      });
+    }
+  });
+}, { threshold: 0.1, rootMargin: '-80px 0px -50% 0px' });
+
+sections.forEach(s => navObserver.observe(s));
+
+// ─── Scroll reveal ───
+const fadeEls = document.querySelectorAll('.fade-in');
+const fadeObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+fadeEls.forEach(el => fadeObserver.observe(el));
 </script>
+
 </body>
 </html>
