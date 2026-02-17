@@ -93,7 +93,7 @@ body::before {
 
 .container { max-width: 820px; margin: 0 auto; padding: 0 28px; }
 .section-anchor { 
-  scroll-margin-top: 70px; 
+  scroll-margin-top: 80px; 
   height: 2px;           
   display: block;        
   visibility: hidden;
@@ -663,11 +663,14 @@ body::before {
 
 /* ─── ANIMATIONS ─── */
 .reveal {
-  opacity: 0;
-  transform: translateY(30px);
+  opacity: 1;
+  /* transform: translateY(30px); */
+  transform: none;
   transition: opacity 0.8s ease, transform 0.8s ease;
 }
-.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal.visible { 
+  opacity: 1; 
+  transform: translateY(0); }
 .reveal-d1 { transition-delay: 0.1s; }
 .reveal-d2 { transition-delay: 0.2s; }
 
@@ -692,13 +695,14 @@ body::before {
 
 <!-- ═══ STICKY NAV ═══ -->
 <nav class="stage-nav">
-  <button class="stage-btn" onclick="goToSection('hero')">01 OVERVIEW</button>
+  <button class="stage-btn" onclick="window.location.href='index.html'">00 PROJECTS HOME</button>
+  <button class="stage-btn active" onclick="goToSection('hero')">01 OVERVIEW</button>
   <button class="stage-btn" onclick="goToSection('problem')">02 PROBLEM</button>
   <button class="stage-btn" onclick="goToSection('idea')">03 IDEA</button>
   <button class="stage-btn" onclick="goToSection('approach')">04 APPROACH</button>
   <button class="stage-btn" onclick="goToSection('results')">05 RESULTS</button>
   <button class="stage-btn" onclick="goToSection('paper')">06 FULL PAPER</button>
-  <button class="stage-btn" onclick="window.location.href='index.html'">00 Projects Home</button>
+  
 </nav>
 
 <!-- ═══ HERO ═══ -->
@@ -1030,8 +1034,8 @@ const navObs = new IntersectionObserver((entries) => {
 anchors.forEach(a => navObs.observe(a));
 </script> -->
 
-  <script>
-// 1. Updated Function Name to avoid browser conflicts
+<script>
+// Use a unique name to avoid conflicts with built-in browser functions
 function goToSection(id) {
   const element = document.getElementById(id);
   if (element) {
@@ -1039,32 +1043,28 @@ function goToSection(id) {
   }
 }
 
-// 2. Scroll reveal logic (keep as you had it)
-const reveals = document.querySelectorAll('.reveal');
-const revealObs = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
-reveals.forEach(el => revealObs.observe(el));
-
-// 3. Improved Active Navigation Highlighting
+// Active nav highlighting logic
 const navBtns = document.querySelectorAll('.stage-btn');
 const anchors = document.querySelectorAll('.section-anchor');
 
 const navObs = new IntersectionObserver((entries) => {
   entries.forEach(e => {
-    // We check if the section is intersecting at all (> 0)
     if (e.isIntersecting) {
       const id = e.target.id;
       navBtns.forEach(b => {
         const clickAttr = b.getAttribute('onclick') || "";
-        // Match the button to the specific section ID
-        b.classList.toggle('active', clickAttr.includes("'" + id + "'"));
+        // Only highlight buttons that use goToSection for this specific ID
+        if (clickAttr.includes('goToSection') && clickAttr.includes("'" + id + "'")) {
+          b.classList.add('active');
+        } else if (clickAttr.includes('goToSection')) {
+          b.classList.remove('active');
+        }
       });
     }
   });
 }, { 
-  threshold: 0.1, // Lower threshold so the small anchor triggers it
-  rootMargin: '-80px 0px -50% 0px' // Calibrated for the sticky navbar
+  threshold: 0.1, 
+  rootMargin: '-80px 0px -50% 0px' 
 });
 
 anchors.forEach(a => navObs.observe(a));
