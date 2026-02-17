@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cooling Load Analysis — Grid Resilience</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #06090f; --surface: #0d1320; --border: #1a2640; --text: #e4eaf2; --accent: #fb923c; }
+/* ... (Style rules matching index.html for consistency) ... */
+</style>
+</head>
+<body>
+<nav class="stage-nav">
+  <button class="stage-btn" onclick="window.location.href='index.html'">00 PROJECTS HOME</button>
+  <button class="stage-btn active" onclick="goToSection('modeling')">01 MODELING</button>
+  <button class="stage-btn" onclick="goToSection('simulation')">02 SIMULATION</button>
+</nav>
+<div class="section-anchor" id="modeling"></div>
+<section class="hero">
+  <div class="badge">ONGOING RESEARCH</div>
+  <h1>Cooling Load Impact</h1>
+  <p class="hero-tagline">Forecasting Electricity Demand and Grid Strain in Warming Urban Environments.</p>
+</section>
+<div class="container">
+  <div class="section-anchor" id="modeling"></div>
+  <section class="section-break">
+    <h2 class="section-label" style="color: var(--accent);">01 — Archetype Modeling</h2>
+    <p>Using Microsoft building footprints and electricity-spend analytics to create residential archetypes and forecast cooling adoption.</p>
+  </section>
+  <div class="section-anchor" id="simulation"></div>
+  <section class="section-break">
+    <h2 class="section-label" style="color: var(--accent);">02 — Simulation Pipeline</h2>
+    <div class="equation-strip"><div class="equation">SketchUp → EnergyPlus → JEPlus → Grid Analysis</div></div>
+    <p>Translating parametric cooling loads into transformer strain estimates under WHO comfort targets to guide grid-resilience planning.</p>
+  </section>
+</div>
+<script>
+function goToSection(id) {
+  const element = document.getElementById(id);
+  if (element) { element.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+}
+</script>
+</body>
+</html>
