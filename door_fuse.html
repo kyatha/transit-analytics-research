@@ -92,7 +92,12 @@ body::before {
 }
 
 .container { max-width: 820px; margin: 0 auto; padding: 0 28px; }
-.section-anchor { scroll-margin-top: 70px; }
+.section-anchor { 
+  scroll-margin-top: 70px; 
+  height: 2px;           
+  display: block;        
+  visibility: hidden;
+}
 
 /* ─── HERO ─── */
 .hero {
@@ -687,12 +692,12 @@ body::before {
 
 <!-- ═══ STICKY NAV ═══ -->
 <nav class="stage-nav">
-  <button class="stage-btn active" onclick="scrollTo('hero')">01 OVERVIEW</button>
-  <button class="stage-btn" onclick="scrollTo('problem')">02 PROBLEM</button>
-  <button class="stage-btn" onclick="scrollTo('idea')">03 IDEA</button>
-  <button class="stage-btn" onclick="scrollTo('approach')">04 APPROACH</button>
-  <button class="stage-btn" onclick="scrollTo('results')">05 RESULTS</button>
-  <button class="stage-btn" onclick="scrollTo('paper')">06 FULL PAPER</button>
+  <button class="stage-btn active" onclick="goToSection('hero')">01 OVERVIEW</button>
+  <button class="stage-btn" onclick="goToSection('problem')">02 PROBLEM</button>
+  <button class="stage-btn" onclick="goToSection('idea')">03 IDEA</button>
+  <button class="stage-btn" onclick="goToSection('approach')">04 APPROACH</button>
+  <button class="stage-btn" onclick="goToSection('results')">05 RESULTS</button>
+  <button class="stage-btn" onclick="goToSection('paper')">06 FULL PAPER</button>
 </nav>
 
 <!-- ═══ HERO ═══ -->
@@ -995,7 +1000,7 @@ body::before {
   <p style="margin-top: 4px;">Nairobi · Kigali 2025</p>
 </div>
 
-<script>
+<!-- <script>
 // Smooth scroll
 function scrollTo(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1021,6 +1026,46 @@ const navObs = new IntersectionObserver((entries) => {
     }
   });
 }, { threshold: 0.25, rootMargin: '-70px 0px -50% 0px' });
+anchors.forEach(a => navObs.observe(a));
+</script> -->
+
+  <script>
+// 1. Updated Function Name to avoid browser conflicts
+function goToSection(id) {
+  const element = document.getElementById(id);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// 2. Scroll reveal logic (keep as you had it)
+const reveals = document.querySelectorAll('.reveal');
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+reveals.forEach(el => revealObs.observe(el));
+
+// 3. Improved Active Navigation Highlighting
+const navBtns = document.querySelectorAll('.stage-btn');
+const anchors = document.querySelectorAll('.section-anchor');
+
+const navObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    // We check if the section is intersecting at all (> 0)
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      navBtns.forEach(b => {
+        const clickAttr = b.getAttribute('onclick') || "";
+        // Match the button to the specific section ID
+        b.classList.toggle('active', clickAttr.includes("'" + id + "'"));
+      });
+    }
+  });
+}, { 
+  threshold: 0.1, // Lower threshold so the small anchor triggers it
+  rootMargin: '-80px 0px -50% 0px' // Calibrated for the sticky navbar
+});
+
 anchors.forEach(a => navObs.observe(a));
 </script>
 </body>
