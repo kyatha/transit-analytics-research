@@ -909,6 +909,228 @@ body::before {
       </div>
     </div>
   </div>
+  <!-- ═══ PIPELINE DIAGRAM — insert after the pipe-steps closing </div> ═══ -->
+  
+  <div class="scene reveal reveal-d1" style="margin-top: 32px;">
+    <div style="padding: 32px 20px 24px; background: linear-gradient(180deg, #0a1018, #0d1824);">
+      <svg viewBox="0 0 760 400" xmlns="http://www.w3.org/2000/svg" fill="none" style="width:100%; height:auto;">
+        <defs>
+          <marker id="arr" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+            <polygon points="0 0, 7 2.5, 0 5" fill="#3d5070"/>
+          </marker>
+          <marker id="arr-red" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+            <polygon points="0 0, 7 2.5, 0 5" fill="#f87171"/>
+          </marker>
+          <marker id="arr-olive" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+            <polygon points="0 0, 7 2.5, 0 5" fill="#fbbf24"/>
+          </marker>
+        </defs>
+
+        <!-- ════════════════════════════════════════════ -->
+        <!-- ROW 1 — Detection Backbone                  -->
+        <!-- ════════════════════════════════════════════ -->
+
+        <!-- Frame -->
+        <rect x="12" y="52" width="60" height="42" rx="5" fill="#111c2e" stroke="#243352" stroke-width="1.2"/>
+        <text x="42" y="69" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9.5" font-weight="600" fill="#e4eaf2">Frame</text>
+        <text x="42" y="83" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" font-style="italic" fill="#7a8da8">I<tspan baseline-shift="sub" font-size="8">t</tspan></text>
+
+        <!-- Body YOLO -->
+        <rect x="118" y="16" width="72" height="30" rx="5" fill="#0f3460" stroke="#22d3ee" stroke-width="1" opacity="0.9"/>
+        <text x="154" y="29" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8.5" font-weight="600" fill="#22d3ee">Body</text>
+        <text x="154" y="41" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#22d3ee" opacity="0.7">YOLO</text>
+
+        <!-- Pose YOLO -->
+        <rect x="118" y="56" width="72" height="30" rx="5" fill="#0f3460" stroke="#a78bfa" stroke-width="1" opacity="0.9"/>
+        <text x="154" y="69" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8.5" font-weight="600" fill="#a78bfa">Pose</text>
+        <text x="154" y="81" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#a78bfa" opacity="0.7">YOLO</text>
+
+        <!-- Head YOLO -->
+        <rect x="118" y="96" width="72" height="30" rx="5" fill="#0f3460" stroke="#f472b6" stroke-width="1" opacity="0.9"/>
+        <text x="154" y="109" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8.5" font-weight="600" fill="#f472b6">Head</text>
+        <text x="154" y="121" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#f472b6" opacity="0.7">YOLO</text>
+
+        <!-- Ghost Injection -->
+        <rect x="238" y="42" width="88" height="48" rx="5" fill="#111c2e" stroke="#38bdf8" stroke-width="1.2"/>
+        <text x="282" y="60" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" fill="#38bdf8">Ghost</text>
+        <text x="282" y="73" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#38bdf8">Injection</text>
+        <text x="282" y="85" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#3d5070" font-style="italic">Hungarian</text>
+
+        <!-- BoTSORT -->
+        <rect x="374" y="46" width="88" height="40" rx="5" fill="#111c2e" stroke="#38bdf8" stroke-width="1.2"/>
+        <text x="418" y="63" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" fill="#38bdf8">BoTSORT</text>
+        <text x="418" y="77" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#38bdf8" opacity="0.7">+ ReID</text>
+
+        <!-- Ablation tags -->
+        <rect x="143" y="49" width="22" height="14" rx="3" fill="#f8717118"/>
+        <text x="154" y="59" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" font-weight="700" fill="#f87171">A4</text>
+        <rect x="271" y="31" width="22" height="14" rx="3" fill="#f8717118"/>
+        <text x="282" y="41" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" font-weight="700" fill="#f87171">A5</text>
+
+        <!-- Row 1 arrows -->
+        <line x1="72" y1="73" x2="92" y2="73" stroke="#3d5070" stroke-width="1.2"/>
+        <line x1="92" y1="31" x2="92" y2="111" stroke="#3d5070" stroke-width="1.2"/>
+        <line x1="92" y1="31" x2="118" y2="31" stroke="#3d5070" stroke-width="1.2" marker-end="url(#arr)"/>
+        <line x1="92" y1="71" x2="118" y2="71" stroke="#3d5070" stroke-width="1.2" marker-end="url(#arr)"/>
+        <line x1="92" y1="111" x2="118" y2="111" stroke="#3d5070" stroke-width="1.2" marker-end="url(#arr)"/>
+        <!-- Body → Ghost -->
+        <line x1="190" y1="31" x2="213" y2="31" stroke="#3d5070" stroke-width="1"/>
+        <line x1="213" y1="31" x2="213" y2="57" stroke="#3d5070" stroke-width="1"/>
+        <line x1="213" y1="57" x2="238" y2="57" stroke="#3d5070" stroke-width="1" marker-end="url(#arr)"/>
+        <!-- Head → Ghost -->
+        <line x1="190" y1="111" x2="213" y2="111" stroke="#3d5070" stroke-width="1"/>
+        <line x1="213" y1="111" x2="213" y2="77" stroke="#3d5070" stroke-width="1"/>
+        <line x1="213" y1="77" x2="238" y2="77" stroke="#3d5070" stroke-width="1" marker-end="url(#arr)"/>
+        <!-- Ghost → BoTSORT -->
+        <line x1="326" y1="66" x2="374" y2="66" stroke="#3d5070" stroke-width="1.2" marker-end="url(#arr)"/>
+
+
+        <!-- ════════════════════════════════════════════ -->
+        <!-- ROW 2 — Gating Pipeline                     -->
+        <!-- ════════════════════════════════════════════ -->
+
+        <!-- Door State -->
+        <rect x="12" y="168" width="82" height="38" rx="5" fill="#1a0f05" stroke="#fb923c" stroke-width="1"/>
+        <text x="53" y="183" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" fill="#fb923c">Door State</text>
+        <text x="53" y="197" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#fb923c" opacity="0.7">Detector</text>
+
+        <!-- Behavioral Blocking -->
+        <rect x="168" y="162" width="112" height="50" rx="5" fill="#1a0f05" stroke="#fb923c" stroke-width="1"/>
+        <text x="224" y="179" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" fill="#fb923c">Behavioral</text>
+        <text x="224" y="192" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" fill="#fb923c">Blocking</text>
+        <text x="224" y="205" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#7a4e0f" font-style="italic">staff / tout</text>
+
+        <!-- Geometric Crossing -->
+        <rect x="330" y="164" width="96" height="44" rx="5" fill="#1a0f05" stroke="#fb923c" stroke-width="1"/>
+        <text x="378" y="181" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" fill="#fb923c">Geometric</text>
+        <text x="378" y="194" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" fill="#fb923c">Crossing</text>
+        <text x="378" y="205" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#7a4e0f" font-style="italic">line + poly</text>
+
+        <!-- Crossing Grace -->
+        <rect x="476" y="168" width="82" height="38" rx="5" fill="#1a0f05" stroke="#fb923c" stroke-width="1"/>
+        <text x="517" y="183" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" fill="#fb923c">Crossing</text>
+        <text x="517" y="197" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#fb923c" opacity="0.7">Grace</text>
+
+        <!-- Saviour -->
+        <rect x="618" y="114" width="78" height="38" rx="5" fill="#1a1a05" stroke="#fbbf24" stroke-width="1"/>
+        <text x="657" y="130" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" fill="#fbbf24">Saviour</text>
+        <text x="657" y="144" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#fbbf24" opacity="0.7">Fallback</text>
+
+        <!-- Ablation tags -->
+        <rect x="42" y="210" width="22" height="14" rx="3" fill="#f8717118"/>
+        <text x="53" y="220" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" font-weight="700" fill="#f87171">A1</text>
+        <rect x="213" y="152" width="22" height="14" rx="3" fill="#f8717118"/>
+        <text x="224" y="162" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" font-weight="700" fill="#f87171">A3</text>
+
+        <!-- Blocked -->
+        <text x="224" y="236" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#f87171">×</text>
+        <text x="224" y="248" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#f87171" font-style="italic" opacity="0.7">blocked IDs</text>
+        <line x1="224" y1="212" x2="224" y2="228" stroke="#f87171" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr-red)"/>
+
+        <!-- Row 2 arrows -->
+        <!-- BoTSORT down → Blocking -->
+        <line x1="418" y1="86" x2="418" y2="128" stroke="#3d5070" stroke-width="1.2"/>
+        <line x1="418" y1="128" x2="224" y2="128" stroke="#3d5070" stroke-width="1.2"/>
+        <line x1="224" y1="128" x2="224" y2="162" stroke="#3d5070" stroke-width="1.2" marker-end="url(#arr)"/>
+        <!-- Blocking → Crossing -->
+        <line x1="280" y1="187" x2="330" y2="187" stroke="#3d5070" stroke-width="1.2" marker-end="url(#arr)"/>
+        <!-- Crossing → Grace -->
+        <line x1="426" y1="187" x2="476" y2="187" stroke="#3d5070" stroke-width="1.2" marker-end="url(#arr)"/>
+        <!-- Door → Grace -->
+        <line x1="94" y1="187" x2="128" y2="187" stroke="#3d5070" stroke-width="1"/>
+        <line x1="128" y1="187" x2="128" y2="238" stroke="#3d5070" stroke-width="1"/>
+        <line x1="128" y1="238" x2="517" y2="238" stroke="#3d5070" stroke-width="1"/>
+        <line x1="517" y1="238" x2="517" y2="206" stroke="#3d5070" stroke-width="1" marker-end="url(#arr)"/>
+        <!-- Frame → Door -->
+        <line x1="42" y1="94" x2="42" y2="145" stroke="#3d5070" stroke-width="1"/>
+        <line x1="42" y1="145" x2="53" y2="145" stroke="#3d5070" stroke-width="1"/>
+        <line x1="53" y1="145" x2="53" y2="168" stroke="#3d5070" stroke-width="1" marker-end="url(#arr)"/>
+        <!-- BoTSORT → Saviour -->
+        <line x1="462" y1="66" x2="580" y2="66" stroke="#fbbf24" stroke-width="1" opacity="0.5"/>
+        <line x1="580" y1="66" x2="580" y2="133" stroke="#fbbf24" stroke-width="1" opacity="0.5"/>
+        <line x1="580" y1="133" x2="618" y2="133" stroke="#fbbf24" stroke-width="1" opacity="0.5" marker-end="url(#arr-olive)"/>
+
+
+        <!-- ════════════════════════════════════════════ -->
+        <!-- ROW 3 — Scoring & Output                    -->
+        <!-- ════════════════════════════════════════════ -->
+
+        <!-- Scorer -->
+        <rect x="168" y="282" width="260" height="64" rx="6" fill="#120a1e" stroke="#a78bfa" stroke-width="1.2"/>
+        <!-- Gradient top bar -->
+        <rect x="168" y="282" width="260" height="3" rx="6" fill="url(#scoreGrad)"/>
+        <defs>
+          <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#38bdf8"/>
+            <stop offset="25%" stop-color="#a78bfa"/>
+            <stop offset="50%" stop-color="#f472b6"/>
+            <stop offset="75%" stop-color="#fb923c"/>
+            <stop offset="100%" stop-color="#34d399"/>
+          </linearGradient>
+        </defs>
+        <text x="298" y="302" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9.5" font-weight="700" fill="#a78bfa">5-Signal Weighted Scorer</text>
+        <text x="298" y="320" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#7a8da8">
+          S = w<tspan font-size="6.5" baseline-shift="sub">o</tspan>·σ<tspan font-size="6.5" baseline-shift="sub">o</tspan>
+          + w<tspan font-size="6.5" baseline-shift="sub">m</tspan>·σ<tspan font-size="6.5" baseline-shift="sub">m</tspan>
+          + w<tspan font-size="6.5" baseline-shift="sub">t</tspan>·σ<tspan font-size="6.5" baseline-shift="sub">t</tspan>
+          + w<tspan font-size="6.5" baseline-shift="sub">b</tspan>·σ<tspan font-size="6.5" baseline-shift="sub">b</tspan>
+          + w<tspan font-size="6.5" baseline-shift="sub">c</tspan>·σ<tspan font-size="6.5" baseline-shift="sub">c</tspan>
+        </text>
+        <text x="298" y="339" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#3d5070" font-style="italic">chaos ← door_density</text>
+
+        <!-- Deferred Counter -->
+        <rect x="478" y="290" width="88" height="46" rx="5" fill="#120a1e" stroke="#a78bfa" stroke-width="1.2"/>
+        <text x="522" y="308" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" fill="#a78bfa">Deferred</text>
+        <text x="522" y="322" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" fill="#a78bfa">Counter</text>
+        <text x="522" y="333" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#3d5070" font-style="italic">A / B / C gates</text>
+
+        <!-- Output -->
+        <rect x="618" y="290" width="100" height="46" rx="6" fill="#0a1a0a" stroke="#34d399" stroke-width="1.5"/>
+        <text x="668" y="320" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" font-weight="700" fill="#34d399">Δ<tspan font-size="10" baseline-shift="sub">in</tspan> , Δ<tspan font-size="10" baseline-shift="sub">out</tspan></text>
+
+        <!-- Ablation tag -->
+        <rect x="287" y="347" width="22" height="14" rx="3" fill="#f8717118"/>
+        <text x="298" y="357" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" font-weight="700" fill="#f87171">A2</text>
+
+        <!-- Row 3 arrows -->
+        <!-- Grace → Scorer -->
+        <line x1="517" y1="206" x2="517" y2="258" stroke="#3d5070" stroke-width="1.2"/>
+        <line x1="517" y1="258" x2="435" y2="258" stroke="#3d5070" stroke-width="1.2"/>
+        <line x1="435" y1="258" x2="435" y2="290" stroke="#3d5070" stroke-width="1.2"/>
+        <line x1="435" y1="290" x2="428" y2="290" stroke="#3d5070" stroke-width="1.2" marker-end="url(#arr)"/>
+        <!-- Pose → Scorer (dashed) -->
+        <line x1="154" y1="86" x2="154" y2="308" stroke="#a78bfa" stroke-width="0.8" stroke-dasharray="4,3" opacity="0.4"/>
+        <line x1="154" y1="308" x2="168" y2="308" stroke="#a78bfa" stroke-width="0.8" opacity="0.4" marker-end="url(#arr)"/>
+        <!-- Head → Scorer (dashed) -->
+        <line x1="190" y1="116" x2="205" y2="116" stroke="#f472b6" stroke-width="0.8" stroke-dasharray="4,3" opacity="0.4"/>
+        <line x1="205" y1="116" x2="205" y2="326" stroke="#f472b6" stroke-width="0.8" stroke-dasharray="4,3" opacity="0.4"/>
+        <line x1="205" y1="326" x2="220" y2="326" stroke="#f472b6" stroke-width="0.8" opacity="0.4"/>
+        <!-- Scorer → Counter -->
+        <line x1="428" y1="314" x2="478" y2="314" stroke="#3d5070" stroke-width="1.2" marker-end="url(#arr)"/>
+        <!-- Counter → Output -->
+        <line x1="566" y1="314" x2="618" y2="314" stroke="#3d5070" stroke-width="1.2" marker-end="url(#arr)"/>
+        <!-- Saviour → Output -->
+        <line x1="657" y1="152" x2="657" y2="290" stroke="#fbbf24" stroke-width="1" opacity="0.5" marker-end="url(#arr-olive)"/>
+
+
+        <!-- ════════════════════════════════════════════ -->
+        <!-- LEGEND                                      -->
+        <!-- ════════════════════════════════════════════ -->
+        <rect x="12" y="374" width="500" height="18" rx="3" fill="#111c2e" stroke="#1a2640" stroke-width="0.5"/>
+        <text y="387" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="0.3">
+          <tspan x="20" fill="#f87171" font-weight="700">A1</tspan><tspan fill="#3d5070"> door gating  </tspan>
+          <tspan fill="#f87171" font-weight="700">A2</tspan><tspan fill="#3d5070"> crowd adapt  </tspan>
+          <tspan fill="#f87171" font-weight="700">A3</tspan><tspan fill="#3d5070"> blocking  </tspan>
+          <tspan fill="#f87171" font-weight="700">A4</tspan><tspan fill="#3d5070"> pose  </tspan>
+          <tspan fill="#f87171" font-weight="700">A5</tspan><tspan fill="#3d5070"> ghost injection</tspan>
+        </text>
+
+      </svg>
+    </div>
+    <div class="scene-caption">
+      <p>System architecture. Frames pass through a <span style="color: var(--cyan);">triple-head detector</span> (body / pose / head), ghost injection restores occluded tracks via Hungarian matching, and behavioral blocking removes <span style="color: var(--orange);">staff and touts</span> before scoring. A <span style="color: var(--violet);">5-signal weighted scorer</span> fuses orientation, motion, trajectory, biometric, and consistency signals with crowd-adaptive weight redistribution. Red labels <span style="color: var(--red);">A1–A5</span> mark ablation toggle points.</p>
+    </div>
+  </div>
 
   <!-- ═══ 05 — RESULTS ═══ -->
   <div class="section-anchor" id="results"></div>
